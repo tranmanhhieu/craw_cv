@@ -37,6 +37,10 @@ class LinkedinPost:
         return driver
     
     def login(self, credential):
+        """Đăng nhập tài khoản linkedin
+        Args:
+            credential(dict): Thông tin tài khoản bao gồm email và password
+        """
         self.driver.get("https://www.linkedin.com/login")
         # Email
         email_field = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
@@ -48,6 +52,11 @@ class LinkedinPost:
         WebDriverWait(self.driver, 10).until(EC.title_contains("LinkedIn"))
 
     def _get_title(self):
+        """Lấy tên người đăng bài post
+
+        Returns:
+            Str: Tên người post bài, nếu không lấy được thì trả về None
+        """
         titles = self.driver.find_elements('xpath', '//span[contains(@class, "actor__title")]')
         if titles:
             title = titles[0].text.split('\n')[0]
@@ -55,21 +64,37 @@ class LinkedinPost:
         return None 
     
     def _get_content(self):
+        """Lấy nội dung trong bài post
+
+        Returns:
+            Str: Nội dung bài post, nếu không có trả về None
+        """
         contents= self.driver.find_elements('xpath', '//span[@class="break-words"]')
         if contents:
             return contents[0].text
         return None 
     
     def _get_reaction_count(self):
+        """Số lượng phản ứng ứng (reaction)
+
+        Returns:
+            Str: Số lượng reaction nếu có, không thì trả về None
+        """
         reactions = self.driver.find_elements('xpath', '//span[contains(@class, "reactions-count")]')
         if reactions:
             return reactions[0].text
         return None 
     
     def _get_comment(self):
+        """Lấy bình luận
+
+        Returns:
+            List[dict]: Danh sách các bình luận nếu có, không thì trả về None
+        """
         scroll_down(self.driver)
         result = []
-        comment_list = self.driver.find_elements('xpath', '//div[contains(@class, "comments-comments-list")]//article[contains(@class, "comments-comment-item")]')
+        comment_list = self.driver.find_elements('xpath', 
+                                                 '//div[contains(@class, "comments-comments-list")]//article[contains(@class, "comments-comment-item")]')
         for comment in comment_list:
             try:
                 item = {}
@@ -81,6 +106,13 @@ class LinkedinPost:
         return result if result else None 
     
     def seach(self, url):
+        """Thu thập nội dung bài post theo post url
+
+        Args:
+            url: url của bài post
+        Returns:
+            Dict: thông tin bài post
+        """
         try:
             self.driver.get(url)
             # Wait for the search results page to load
