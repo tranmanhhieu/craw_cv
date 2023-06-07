@@ -74,7 +74,7 @@ class LinkedinPost:
             try:
                 item = {}
                 item['name'] = comment.find_element('xpath', '//span[contains(@class, "comments-post-meta__name-text")]').text 
-                item['comment'] = comment.find_element('xpath', 'span[contains(@class, "comments-comment-item__main-content")]').text
+                item['comment'] = comment.find_element('xpath', '//span[contains(@class, "comments-comment-item__main-content")]').text
                 result.append(item)
             except Exception as ex:
                 continue
