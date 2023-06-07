@@ -1,0 +1,7 @@
+redis
+undetected-chromedriver
+chromedriver-autoinstaller
+pymongo
+tqdm
+ipython
+selenium-wire
