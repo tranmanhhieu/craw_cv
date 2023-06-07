@@ -19,7 +19,6 @@ class LinkedinPost:
         """Mở chương trình chrome
 
         Args:
-            proxy(bool): True nếu dùng proxy và ngược lại
             headless(bool): True chạy bằng mode headless, default False
         """
         options = uc.ChromeOptions()
