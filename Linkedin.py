@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from config import *
-import time 
+import time
 import random
 from utils.utils import scroll_down
 
@@ -14,6 +14,7 @@ class LinkedinPost:
         chromedriver_autoinstaller.install()
         self.chrome_version = chromedriver_autoinstaller.get_chrome_version().split('.')[0]
         self.driver = self._init_driver(headless)
+
 
     def _init_driver(self, headless):
         """Mở chương trình chrome
@@ -31,10 +32,26 @@ class LinkedinPost:
         options.add_argument("--disable-gpu")
         if headless:
             options.add_argument("--headless")
-        driver = uc.Chrome(options=options, 
+        driver = uc.Chrome(options=options,
                            version_main=self.chrome_version)
         return driver
-    
+
+    def get_list_url(self, keyword):
+        list_url = []
+        key_word = "+".join(keyword.split(" "))
+        for x in range(0, 20, 10):
+
+            self.driver.get(
+                f'https://www.google.com/search?q=site:linkedin.com/posts/+inurl:/in/+intitle:{key_word}&rlz=1C1PNBB_enVN960VN960&sxsrf=APwXEdcEHsKS8i_rxEk_shM9UPJHZ2bvxw:1684831565326&ei=TX1sZIq9E92j2roPg-qkwA8&start={x}&sa=N&ved=2ahUKEwjKl9TXhov_AhXdkVYBHQM1CfgQ8tMDegQIDBAE&biw=958&bih=955&dpr=1')
+
+            time.sleep(random.uniform(2.5, 4.9))
+            # linkedin_urls = self.driver.find_elements('xpath', '//div[@class="yuRUbf"]/a')
+            linkedin_urls = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//div[@class="yuRUbf"]/a')))
+            for link in linkedin_urls:
+                list_url.append(link.get_attribute('href'))
+            time.sleep(10)
+        return list_url
+
     def login(self, credential):
         """Đăng nhập tài khoản linkedin
         Args:
@@ -60,8 +77,8 @@ class LinkedinPost:
         if titles:
             title = titles[0].text.split('\n')[0]
             return title
-        return None 
-    
+        return None
+
     def _get_content(self):
         """Lấy nội dung trong bài post
 
@@ -71,8 +88,8 @@ class LinkedinPost:
         contents= self.driver.find_elements('xpath', '//span[@class="break-words"]')
         if contents:
             return contents[0].text
-        return None 
-    
+        return None
+
     def _get_reaction_count(self):
         """Số lượng phản ứng ứng (reaction)
 
@@ -82,8 +99,8 @@ class LinkedinPost:
         reactions = self.driver.find_elements('xpath', '//span[contains(@class, "reactions-count")]')
         if reactions:
             return reactions[0].text
-        return None 
-    
+        return None
+
     def _get_comment(self):
         """Lấy bình luận
 
@@ -92,18 +109,18 @@ class LinkedinPost:
         """
         scroll_down(self.driver)
         result = []
-        comment_list = self.driver.find_elements('xpath', 
+        comment_list = self.driver.find_elements('xpath',
                                                  '//div[contains(@class, "comments-comments-list")]//article[contains(@class, "comments-comment-item")]')
         for comment in comment_list:
             try:
                 item = {}
-                item['name'] = comment.find_element('xpath', '//span[contains(@class, "comments-post-meta__name-text")]').text 
+                item['name'] = comment.find_element('xpath', '//span[contains(@class, "comments-post-meta__name-text")]').text
                 item['comment'] = comment.find_element('xpath', '//span[contains(@class, "comments-comment-item__main-content")]').text
                 result.append(item)
             except Exception as ex:
                 continue
-        return result if result else None 
-    
+        return result if result else None
+
     def seach(self, url):
         """Thu thập nội dung bài post theo post url
 
@@ -124,10 +141,10 @@ class LinkedinPost:
             return post
         except Exception as ex:
             print('Not exist result')
-            return None 
+            return None
 
 if __name__ == '__main__':
-    bot = LinkedinPost(headless=True)
-    bot.login({'email': 'beomik0123@gmail.com', 'password':'beomik123'})
+    bot = LinkedinPost()
+    bot.login({'email': 'beomik0123@gmail.com', 'password':'tranmanhhieu238'})
     result = bot.seach(url='https://www.linkedin.com/posts/asif-bhat_going-pro-in-data-science-activity-6584710581549404160-H0za/')
     print(result)
